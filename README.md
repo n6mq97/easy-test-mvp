@@ -11,7 +11,24 @@ This is a full-stack application with a React frontend and a FastAPI backend. Th
 - **Frontend:** React, Vite
 - **Backend:** FastAPI, Python, Poetry
 - **Database:** PostgreSQL
-- **Containerization:** Docker, Docker Compose
+- **Containerization:** Docker, Docker Compose, Dev Containers
+
+## Development Workflow (Dev Containers)
+
+The primary development environment is managed via VS Code Dev Containers.
+
+1.  **Starting the Environment:** Open the project folder in VS Code. It will automatically detect the `.devcontainer` configuration and prompt to "Reopen in Container". This will build and start all services defined in `docker-compose.dev.yml`.
+
+2.  **Working Environment:**
+    *   You are connected to the **`backend`** container. The integrated terminal in VS Code operates within this container.
+    *   The entire project directory is mounted at `/app`. The working directory is set to `/app/back`.
+    *   All backend-related commands (e.g., `poetry add`, `poetry run`) should be executed directly in the VS Code terminal.
+
+3.  **Interacting with Other Services:**
+    *   **Frontend:** To run commands for the frontend (e.g., `npm install <package>`), you must execute them inside the `frontend` container. Use the Docker extension in VS Code or the command `docker exec -it <frontend_container_name> sh`.
+    *   **Database:** The database is accessible on `localhost:5432` from the host machine and via the service name `db` from within the other containers.
+
+**Key Principle:** All development, dependency management, and execution must happen *inside* the respective containers. Do not run `npm` or `poetry` commands on the host machine.
 
 ## Environments
 
@@ -19,7 +36,7 @@ The project has two separate configurations for development and production.
 
 ### Development
 
-The development environment is managed by `docker-compose.dev.yml`. To start the application with hot-reloading, run:
+The development environment is managed by `docker-compose.dev.yml` and is intended to be run via Dev Containers. To start manually, run:
 
 ```bash
 docker-compose -f docker-compose.dev.yml up --build
@@ -27,7 +44,7 @@ docker-compose -f docker-compose.dev.yml up --build
 
 ### Production
 
-The production environment is managed by `docker-compose.prod.yml`. This configuration is designed for deployment and does not include hot-reloading. It builds the frontend assets and runs the backend in a production-ready state. To build and run, use:
+The production environment is managed by `docker-compose.prod.yml`. This configuration is designed for deployment and does not include hot-reloading. To build and run, use:
 
 ```bash
 docker-compose -f docker-compose.prod.yml up --build
@@ -37,6 +54,7 @@ All sensitive configuration is managed via `.env` files.
 
 ## Important File Locations
 
+- **Dev Container Config:** `.devcontainer/devcontainer.json`
 - **Docker Compose (Dev):** `docker-compose.dev.yml`
 - **Docker Compose (Prod):** `docker-compose.prod.yml`
 - **Backend Dockerfile (Dev):** `back/Dockerfile.dev`
@@ -50,11 +68,21 @@ All sensitive configuration is managed via `.env` files.
 
 - **Primary Goal:** Assist with development, debugging, and feature implementation.
 - **Core Task:** Understand user requests and translate them into code changes, configuration updates, or other relevant actions.
-- **Key Constraint:** All operations should be performed within the project's containerized environment. Do not attempt to run services or install dependencies outside of Docker.
-- **Hot-Reload:** Remember that hot-reloading is enabled. After making changes, the services should restart automatically. Verify changes by observing the logs from `docker-compose up`.
+- **Key Constraint:** All operations should be performed within the project's containerized environment as described in the "Development Workflow" section.
+- **Hot-Reload:** Remember that hot-reloading is enabled. After making changes, the services should restart automatically.
 - **Task Log:** At the user's request, add a summary of completed tasks to the "Task Log" section.
 
 ## Task Log
+
+- **2025-08-08 (Dev Container Setup):**
+  - **Task:** Configure and refine the VS Code Dev Containers environment for seamless full-stack development.
+  - **Changes:**
+    - Created `.devcontainer/devcontainer.json` to define the development container based on the `backend` service.
+    - Mounted the Docker socket (`/var/run/docker.sock`) into the `backend` container to allow the Docker extension in VS Code to manage other containers.
+    - Installed the Docker CLI inside the `backend` container to enable communication with the Docker daemon.
+    - Mounted the entire project directory into both `backend` and `frontend` services for full file visibility and consistency.
+    - Set the `working_dir` for both `backend` (`/app/back`) and `frontend` (`/app/front`) services to ensure commands execute in the correct context.
+    - Updated this README with a detailed "Development Workflow" section.
 
 - **2025-08-07 (Deployment Prep):**
   - **Task:** Prepare the application for production deployment.

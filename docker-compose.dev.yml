@@ -16,9 +16,11 @@ services:
       dockerfile: Dockerfile.dev
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
-      - ./back/app:/app/app
+      - .:/app
+      - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "8000:8000"
+    working_dir: /app/back
     depends_on:
       - db
     environment:
@@ -28,9 +30,9 @@ services:
     image: node:20-alpine
     command: sh -c "if [ ! -d 'node_modules' ]; then npm install; fi && npm run dev -- --host"
     volumes:
-      - ./front:/app
+      - .:/app
     ports:
       - "5173:5173"
-    working_dir: /app
+    working_dir: /app/front
     depends_on:
       - backend

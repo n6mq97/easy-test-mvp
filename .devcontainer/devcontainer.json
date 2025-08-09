@@ -8,9 +8,19 @@
 			"extensions": [
 				"ms-python.python",
 				"ms-python.vscode-pylance",
-				"saoudrizwan.claude-dev",
-				"ms-azuretools.vscode-docker"
+				"ms-azuretools.vscode-docker",
+				"GitHub.vscode-pull-request-github"
 			]
+		}
+	},
+	"features": {
+		"ghcr.io/devcontainers/features/git:1": {},
+		"ghcr.io/devcontainers/features/github-cli:1": {},
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {
+			"moby": true,
+			"installDockerBuildx": true,
+			"version": "latest",
+			"dockerDashComposeVersion": "v2"
 		}
 	},
 	"forwardPorts": [8000, 5173, 5432]

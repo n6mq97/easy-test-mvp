@@ -15,18 +15,19 @@ This is a full-stack application with a React frontend and a FastAPI backend. Th
 
 ## Development Workflow (Dev Containers)
 
-The primary development environment is managed via VS Code Dev Containers.
+The primary development environment is managed via VS Code Dev Containers. This provides a fully configured, consistent, and reproducible environment for all team members.
 
-1.  **Starting the Environment:** Open the project folder in VS Code. It will automatically detect the `.devcontainer` configuration and prompt to "Reopen in Container". This will build and start all services defined in `docker-compose.dev.yml`.
+**1. First-Time Setup:**
+Before launching, ensure your GitHub SSH key is added to your local SSH agent. You can check this by running `ssh-add -l` on your local machine. If your key is not listed, add it using `ssh-add ~/.ssh/your_key_name` (on macOS, adding `--apple-use-keychain` is recommended).
 
-2.  **Working Environment:**
-    *   You are connected to the **`backend`** container. The integrated terminal in VS Code operates within this container.
-    *   The entire project directory is mounted at `/app`. The working directory is set to `/app/back`.
-    *   All backend-related commands (e.g., `poetry add`, `poetry run`) should be executed directly in the VS Code terminal.
+**2. Launching the Environment:**
+Simply open the project folder in VS Code. It will automatically detect the `.devcontainer` configuration and prompt to "Reopen in Container".
 
-3.  **Interacting with Other Services:**
-    *   **Frontend:** To run commands for the frontend (e.g., `npm install <package>`), you must execute them inside the `frontend` container. Use the Docker extension in VS Code or the command `docker exec -it <frontend_container_name> sh`.
-    *   **Database:** The database is accessible on `localhost:5432` from the host machine and via the service name `db` from within the other containers.
+**3. Working Inside the Container:**
+*   You are connected to the **`backend`** container, which serves as your main development environment.
+*   All tools (`git`, `poetry`, `docker-cli`) are available in the VS Code terminal.
+*   **Git Troubleshooting:** If you face `Permission denied (publickey)` errors, the most likely cause is that your key is not loaded into the SSH agent on your host machine (see step 1).
+*   **Frontend Commands:** To run commands for the frontend (e.g., `npm install`), you must execute them inside the `frontend` container (`docker exec -it <name> sh`).
 
 **Key Principle:** All development, dependency management, and execution must happen *inside* the respective containers. Do not run `npm` or `poetry` commands on the host machine.
 
@@ -74,6 +75,14 @@ All sensitive configuration is managed via `.env` files.
 
 ## Task Log
 
+- **2025-08-09 (Dev Container Finalization):**
+  - **Task:** Perfect the Dev Container setup for maximum simplicity and reliability.
+  - **Changes:**
+    - Upgraded the base `backend` image to a feature-rich `mcr.microsoft.com/devcontainers/python` image.
+    - Replaced all manual tool installations and SSH agent forwarding with the standard, built-in Dev Container "features".
+    - Diagnosed and resolved the root cause of SSH authentication issues (SSH key not being loaded into the host's agent).
+    - The final configuration is now extremely clean, relying on the automatic mechanisms of Dev Containers.
+
 - **2025-08-08 (Dev Container Setup):**
   - **Task:** Configure and refine the VS Code Dev Containers environment for seamless full-stack development.
   - **Changes:**
@@ -86,7 +95,7 @@ All sensitive configuration is managed via `.env` files.
 
 - **2025-08-07 (Deployment Prep):**
   - **Task:** Prepare the application for production deployment.
-  - **Changes:**
+    - Implemented a robust SSH socket forwarding mechanism using a stable path (`~/.ssh/ssh_auth_sock`).
     - Renamed development-specific Docker configurations to `*.dev.yml` and `*.dev`.
     - Created `docker-compose.prod.yml` for the production environment.
     - Created `back/Dockerfile.prod` for the production backend image.

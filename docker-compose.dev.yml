@@ -3,12 +3,10 @@ services:
     image: postgres:13
     volumes:
       - ./db_data:/var/lib/postgresql/data/
-      - ./postgres_config/pg_hba.conf:/etc/postgresql/pg_hba.conf
     environment:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=testdb
-    command: postgres -c 'hba_file=/etc/postgresql/pg_hba.conf'
     network_mode: service:backend
 
   backend:

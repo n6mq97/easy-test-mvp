@@ -1,87 +1,87 @@
-# CI/CD Setup - Краткая инструкция
+# CI/CD Setup - Quick Guide
 
-## 🚀 Быстрый старт
+## 🚀 Quick Start
 
-### Локальное тестирование
+### Local Testing
 ```bash
-# Запустить все тесты
+# Run all tests
 make test-all
 
-# Запустить полный CI/CD pipeline
+# Run full CI/CD pipeline
 make ci
 
-# Или использовать скрипт напрямую
+# Or use script directly
 ./test-ci.sh
 ```
 
-### Отдельные команды
+### Individual Commands
 ```bash
-# Бэкенд
-make test-backend          # Тесты
-make install-backend       # Установка зависимостей
+# Backend
+make test-backend          # Tests
+make install-backend       # Install dependencies
 
-# Фронтенд
-make test-frontend         # Тесты
-make lint-frontend         # Линтинг
-make build-frontend        # Сборка
-make install-frontend      # Установка зависимостей
+# Frontend
+make test-frontend         # Tests
+make lint-frontend         # Linting
+make build-frontend        # Build
+make install-frontend      # Install dependencies
 ```
 
-## 📋 Что проверяется
+## 📋 What is Checked
 
 ### Backend (Python + FastAPI)
-- ✅ Тесты с pytest
-- ✅ Эндпоинт `/health`
-- ✅ Основной эндпоинт `/`
+- ✅ Tests with pytest
+- ✅ `/health` endpoint
+- ✅ Main endpoint `/`
 
 ### Frontend (React + Vite)
-- ✅ Тесты с Vitest + React Testing Library
-- ✅ Линтинг с ESLint
-- ✅ Сборка production версии
+- ✅ Tests with Vitest + React Testing Library
+- ✅ Linting with ESLint
+- ✅ Production build
 
 ## 🔧 GitHub Actions
 
-При push в `main` или `develop` ветки автоматически запускается:
-1. **Backend Tests** - Python тесты
-2. **Frontend Tests** - React тесты + линтинг + сборка
-3. **Deploy** - Условный деплой (только для main)
+On push to `main` or `develop` branches, the following runs automatically:
+1. **Backend Tests** - Python tests
+2. **Frontend Tests** - React tests + linting + build
+3. **Deploy** - Conditional deployment (only for main)
 
-## 📁 Структура файлов
+## 📁 File Structure
 
 ```
 .github/workflows/ci.yml    # GitHub Actions workflow
-back/tests/                 # Тесты бэкенда
-front/src/test/             # Тесты фронтенда
-Makefile                    # Команды для разработки
-test-ci.sh                  # Скрипт локального CI/CD
-pytest.ini                  # Конфигурация pytest
-vite.config.js              # Конфигурация Vite + тестов
+back/tests/                 # Backend tests
+front/src/test/             # Frontend tests
+Makefile                    # Development commands
+test-ci.sh                  # Local CI/CD script
+pytest.ini                  # pytest configuration
+vite.config.js              # Vite + tests configuration
 ```
 
 ## 🐛 Troubleshooting
 
-### Backend тесты не проходят
+### Backend tests failing
 ```bash
 cd back
 poetry install --with dev
 poetry run pytest -v
 ```
 
-### Frontend тесты не проходят
+### Frontend tests failing
 ```bash
 docker exec easy-test-mvp-frontend-1 npm install
 docker exec easy-test-mvp-frontend-1 npm run test:run
 ```
 
-### Обновить зависимости
+### Update dependencies
 ```bash
 make install
 ```
 
-## 🎯 Следующие шаги
+## 🎯 Next Steps
 
-1. **Добавить больше тестов** - покрыть основную логику
-2. **Настроить реальный деплой** - заменить echo команды в GitHub Actions
-3. **Добавить E2E тесты** - Playwright или Cypress
-4. **Настроить мониторинг** - проверка здоровья сервисов
-5. **Добавить security scanning** - проверка уязвимостей
+1. **Add more tests** - cover main logic
+2. **Set up real deployment** - replace echo commands in GitHub Actions
+3. **Add E2E tests** - Playwright or Cypress
+4. **Set up monitoring** - service health checks
+5. **Add security scanning** - vulnerability checks

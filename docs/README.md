@@ -1,42 +1,42 @@
-# 📚 Документация проекта
+# 📚 Project Documentation
 
-## 📖 Основные документы
+## 📖 Main Documents
 
-- **[CI/CD Setup](ci-cd.md)** - Настройка и использование CI/CD pipeline
-- **[Backend README](../back/README.md)** - Документация бэкенда
-- **[Frontend README](../front/README.md)** - Документация фронтенда
+- **[CI/CD Setup](ci-cd.md)** - CI/CD pipeline setup and usage
+- **[Backend README](../back/README.md)** - Backend documentation
+- **[Frontend README](../front/README.md)** - Frontend documentation
 
-## 🚀 Быстрый старт
+## 🚀 Quick Start
 
-### Тестирование
+### Testing
 ```bash
-# Запустить все тесты
+# Run all tests
 make test-all
 
-# Запустить полный CI/CD pipeline
+# Run full CI/CD pipeline
 make ci
 ```
 
-### Разработка
+### Development
 ```bash
-# Установить зависимости
+# Install dependencies
 make install
 
-# Запустить в режиме разработки
+# Run in development mode
 make dev
 ```
 
-## 📁 Структура проекта
+## 📁 Project Structure
 
 ```
-docs/           # Документация
-scripts/        # Shell скрипты
+docs/           # Documentation
+scripts/        # Shell scripts
 back/           # Backend (Python + FastAPI)
 front/          # Frontend (React + Vite)
 .github/        # GitHub Actions
 ```
 
-## 🔗 Полезные ссылки
+## 🔗 Useful Links
 
-- [Основной README](../README.md)
-- [Makefile](../Makefile) - команды для разработки
+- [Main README](../README.md)
+- [Makefile](../Makefile) - development commands

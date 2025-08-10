@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 Запуск локального CI/CD pipeline..."
+echo "🚀 Starting local CI/CD pipeline..."
 echo "======================================"
 
 echo ""

@@ -75,85 +75,85 @@ All sensitive configuration is managed via `.env` files.
 
 ## Testing & CI/CD
 
-Подробная документация по CI/CD находится в папке [docs/](docs/README.md)
+Detailed CI/CD documentation is located in the [docs/](docs/README.md) folder
 
 ### Running Tests Locally
 
 #### Backend Tests
 ```bash
-# Установить зависимости
+# Install dependencies
 cd back && poetry install --with dev
 
-# Запустить тесты
+# Run tests
 poetry run pytest -v
 ```
 
 #### Frontend Tests
 ```bash
-# Установить зависимости
+# Install dependencies
 cd front && npm install
 
-# Запустить тесты
+# Run tests
 npm run test:run
 
-# Запустить тесты в watch режиме
+# Run tests in watch mode
 npm run test
 ```
 
 #### Using Makefile
 ```bash
-# Установить все зависимости
+# Install all dependencies
 make install
 
-# Запустить все тесты
+# Run all tests
 make test-all
 
-# Запустить только бэкенд тесты
+# Run only backend tests
 make test-backend
 
-# Запустить только фронтенд тесты
+# Run only frontend tests
 make test-frontend
 
-# Показать справку по командам
+# Show help for commands
 make help
 ```
 
 ### CI/CD Pipeline
 
-Проект настроен с GitHub Actions для автоматического тестирования и деплоя:
+The project is configured with GitHub Actions for automatic testing and deployment:
 
 - **Backend Tests**: Python + Poetry + pytest
 - **Frontend Tests**: Node.js + Vitest + React Testing Library
-- **Linting**: ESLint для фронтенда
-- **Build**: Проверка сборки фронтенда
-- **Deploy**: Автоматический деплой при push в main ветку
+- **Linting**: ESLint for frontend
+- **Build**: Frontend build verification
+- **Deploy**: Automatic deployment on push to main branch
 
-Файл конфигурации: `.github/workflows/ci.yml`
+Configuration file: `.github/workflows/ci.yml`
 
 ## Task Log
 
 - **2025-08-09 (CI/CD Setup & Testing):**
-  - **Task:** Настроить CI/CD pipeline с простыми тестами для бэкенда и фронтенда.
+  - **Task:** Set up CI/CD pipeline with simple tests for backend and frontend.
   - **Changes:**
-    - **Backend Testing:** Добавлена система тестирования с pytest.
-      - Добавлены dev-зависимости: pytest, pytest-asyncio, httpx
-      - Создан простой тест для основного эндпоинта и health check
-      - Добавлен эндпоинт `/health` для проверки состояния сервиса
-      - Настроена конфигурация pytest в `pytest.ini`
-    - **Frontend Testing:** Настроено тестирование с Vitest и React Testing Library.
-      - Добавлены dev-зависимости: vitest, @testing-library/react, @testing-library/jest-dom
-      - Создан простой тест для App компонента
-      - Настроен Vite для тестирования с jsdom окружением
-      - Добавлены npm скрипты для тестирования
-    - **CI/CD Pipeline:** Создан GitHub Actions workflow.
-      - Автоматическое тестирование бэкенда и фронтенда
-      - Проверка линтинга и сборки
-      - Условный деплой при push в main ветку
-      - Кэширование зависимостей для ускорения сборки
-    - **Developer Experience:** Улучшена удобство разработки.
-      - Создан Makefile с полезными командами
-      - Команды для установки зависимостей, запуска тестов, линтинга
-      - Команды для запуска сервисов в режиме разработки
+    - **Backend Testing:** Added testing system with pytest.
+      - Added dev dependencies: pytest, pytest-asyncio, httpx
+      - Created simple test for main endpoint and health check
+      - Added `/health` endpoint for service status check
+      - Configured pytest configuration in `pytest.ini`
+    - **Frontend Testing:** Set up testing with Vitest and React Testing Library.
+      - Added dev dependencies: vitest, @testing-library/react, @testing-library/jest-dom
+      - Created simple test for App component
+      - Configured Vite for testing with jsdom environment
+      - Added npm scripts for testing
+    - **CI/CD Pipeline:** Created GitHub Actions workflow.
+      - Automatic backend and frontend testing
+      - Linting and build verification
+      - Conditional deployment on push to main branch
+      - Dependency caching for faster builds
+    - **Developer Experience:** Improved development convenience.
+      - Created Makefile with useful commands
+      - Commands for installing dependencies, running tests, linting
+      - Commands for running services in development mode
 
 - **2025-08-09 (Database Architecture & Migration System):**
   - **Task:** Implement proper database migration system and optimize Docker networking.

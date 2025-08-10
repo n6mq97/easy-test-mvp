@@ -1,42 +1,42 @@
 .PHONY: help test-backend test-frontend test-all install-backend install-frontend
 
-help: ## Показать справку
-	@echo "Доступные команды:"
+help: ## Show help
+	@echo "Available commands:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
-install-backend: ## Установить зависимости бэкенда
+install-backend: ## Install backend dependencies
 	cd back && poetry install --with dev
 
-install-frontend: ## Установить зависимости фронтенда
+install-frontend: ## Install frontend dependencies
 	docker exec easy-test-mvp-frontend-1 npm install
 
-install: install-backend install-frontend ## Установить все зависимости
+install: install-backend install-frontend ## Install all dependencies
 
-test-backend: ## Запустить тесты бэкенда
+test-backend: ## Run backend tests
 	cd back && poetry run pytest -v
 
-test-frontend: ## Запустить тесты фронтенда
+test-frontend: ## Run frontend tests
 	docker exec easy-test-mvp-frontend-1 npm run test:run
 
-test-all: test-backend test-frontend ## Запустить все тесты
+test-all: test-backend test-frontend ## Run all tests
 
-lint-frontend: ## Запустить линтер фронтенда
+lint-frontend: ## Run frontend linter
 	docker exec easy-test-mvp-frontend-1 npm run lint
 
-build-frontend: ## Собрать фронтенд
+build-frontend: ## Build frontend
 	docker exec easy-test-mvp-frontend-1 npm run build
 
-dev-backend: ## Запустить бэкенд в режиме разработки
+dev-backend: ## Run backend in development mode
 	cd back && poetry run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
-dev-frontend: ## Запустить фронтенд в режиме разработки
+dev-frontend: ## Run frontend in development mode
 	docker exec easy-test-mvp-frontend-1 npm run dev
 
-dev: ## Запустить оба сервиса в режиме разработки
-	@echo "Запуск бэкенда в фоне..."
+dev: ## Run both services in development mode
+	@echo "Starting backend in background..."
 	@$(MAKE) dev-backend &
-	@echo "Запуск фронтенда..."
+	@echo "Starting frontend..."
 	@$(MAKE) dev-frontend
 
-ci: ## Запустить полный CI/CD pipeline локально
+ci: ## Run full CI/CD pipeline locally
 	./scripts/test-ci.sh

@@ -40,4 +40,5 @@ jobs:
     - name: Cleanup
       if: always()
       run: |
+        docker compose -f docker-compose.ci.yml logs --no-color
         docker compose -f docker-compose.ci.yml down

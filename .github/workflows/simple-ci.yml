@@ -25,25 +25,9 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
     
-    - name: Start services with Docker Compose
+    - name: Start and wait for services
       run: |
-        docker compose -f docker-compose.ci.yml up -d
-        
-    - name: Wait for services to be ready
-      run: |
-        # Wait for PostgreSQL
-        until docker compose -f docker-compose.ci.yml exec -T db pg_isready -U user -d testdb; do
-          echo "Waiting for PostgreSQL..."
-          sleep 2
-        done
-        
-        # Wait for Backend
-        until curl -f http://localhost:8000/health; do
-          echo "Waiting for Backend..."
-          sleep 2
-        done
-        
-        echo "All services are ready!"
+        docker compose -f docker-compose.ci.yml up -d --wait
     
     - name: Run Backend Tests
       run: |

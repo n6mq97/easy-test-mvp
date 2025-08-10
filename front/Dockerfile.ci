@@ -15,4 +15,4 @@ COPY . .
 EXPOSE 3000
 
 # Default command
-CMD ["npm", "run", "test:run"]
+CMD ["npm", "run", "dev"]

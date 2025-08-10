@@ -11,6 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     name: Test Backend
     
+    env:
+      DATABASE_URL: "postgresql://test:test@localhost:5432/testdb"
+    
     steps:
     - uses: actions/checkout@v4
     

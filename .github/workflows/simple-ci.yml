@@ -29,12 +29,9 @@ jobs:
       run: |
         docker compose -f docker-compose.ci.yml up -d --wait
     
-    - name: Run Backend Tests
+    - name: Run Tests
       run: |
         docker compose -f docker-compose.ci.yml exec -T backend poetry run pytest -v
-    
-    - name: Run Frontend Tests
-      run: |
         docker compose -f docker-compose.ci.yml exec -T frontend npm run test:run
     
     - name: Cleanup

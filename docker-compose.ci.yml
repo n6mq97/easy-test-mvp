@@ -21,6 +21,7 @@ services:
     ports:
       - "8000:8000"
     environment:
+      - API_BASE_URL=http://backend:8000
       - DATABASE_URL=${DATABASE_URL}
       - ENVIRONMENT=ci
       - DB_HOST=db

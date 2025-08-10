@@ -23,5 +23,6 @@
 			"dockerDashComposeVersion": "v2"
 		}
 	},
-	"forwardPorts": [8000, 5173, 5432]
+	"forwardPorts": [8000, 5173, 5432],
+	"remoteUser": "root"
 }

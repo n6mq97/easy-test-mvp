@@ -11,8 +11,23 @@ jobs:
     runs-on: ubuntu-latest
     name: Test Backend
     
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: testdb
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
     env:
-      DATABASE_URL: "postgresql://test:test@localhost:5432/testdb"
+      DATABASE_URL: "postgresql://user:password@localhost:5432/testdb"
     
     steps:
     - uses: actions/checkout@v4
@@ -38,6 +53,26 @@ jobs:
     - name: Install dependencies
       working-directory: ./back
       run: poetry install --with dev
+    
+    - name: Install PostgreSQL client
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y postgresql-client
+    
+    - name: Wait for PostgreSQL
+      run: |
+        until pg_isready -h localhost -p 5432 -U test; do
+          echo "Waiting for PostgreSQL..."
+          sleep 2
+        done
+        echo "PostgreSQL is ready!"
+    
+    - name: Run database migrations
+      working-directory: ./back
+      run: |
+        poetry run alembic upgrade head
+      env:
+        DATABASE_URL: "postgresql://test:test@localhost:5432/testdb"
     
     - name: Run tests
       working-directory: ./back

@@ -3,12 +3,13 @@ services:
     image: postgres:13
     volumes:
       - ./db_data:/var/lib/postgresql/data/
+      - ./postgres_config/pg_hba.conf:/etc/postgresql/pg_hba.conf
     environment:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=testdb
-    ports:
-      - "5432:5432"
+    command: postgres -c 'hba_file=/etc/postgresql/pg_hba.conf'
+    network_mode: service:backend
 
   backend:
     build: 
@@ -20,19 +21,16 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "8000:8000"
+      - "5432:5432"
+      - "5173:5173"
     working_dir: /app/back
-    depends_on:
-      - db
     environment:
-      - DATABASE_URL=postgresql://user:password@db/testdb
+      - DATABASE_URL=postgresql://user:password@localhost/testdb
 
   frontend:
     image: node:20-alpine
     command: sh -c "if [ ! -d 'node_modules' ]; then npm install; fi && npm run dev -- --host"
     volumes:
       - .:/app
-    ports:
-      - "5173:5173"
     working_dir: /app/front
-    depends_on:
-      - backend
+    network_mode: service:backend

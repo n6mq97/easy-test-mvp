@@ -75,6 +75,29 @@ All sensitive configuration is managed via `.env` files.
 
 ## Task Log
 
+- **2025-08-09 (Database Architecture & Migration System):**
+  - **Task:** Implement proper database migration system and optimize Docker networking.
+  - **Changes:**
+    - **Database Migrations:** Added Alembic migration system for proper database schema management.
+      - Created `back/alembic/` directory with migration infrastructure
+      - Added `back/alembic.ini` configuration file
+      - Created comprehensive `back/README.md` with migration commands
+      - Removed automatic table creation from `main.py` (now handled by migrations)
+    - **Docker Networking Optimization:** Improved container communication and port management.
+      - Changed database connection from `db` hostname to `localhost` (using network_mode: service:backend)
+      - Moved all port exposures to backend container for centralized access
+      - Added PostgreSQL configuration file mounting (`pg_hba.conf`)
+      - Removed explicit service dependencies (now handled by network_mode)
+    - **Database Configuration:** Enhanced PostgreSQL setup and data management.
+      - Added `postgres_config/` directory for custom PostgreSQL configuration
+      - Updated `.env.example` with correct localhost database URL
+      - Added `db_data/` to `.gitignore` for proper data persistence
+      - Removed `db_data/.gitignore` file (no longer needed)
+    - **Migration Scripts:** Added database migration utilities.
+      - Created `migrate.sh` script for easy migration execution
+      - Added `start-prod.sh` script for production deployment
+    - **Documentation:** Enhanced backend documentation with migration procedures.
+
 - **2025-08-09 (Dev Container Finalization):**
   - **Task:** Perfect the Dev Container setup for maximum simplicity and reliability.
   - **Changes:**

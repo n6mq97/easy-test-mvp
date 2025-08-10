@@ -7,7 +7,6 @@ from .database import SessionLocal, engine, get_db
 
 from fastapi.middleware.cors import CORSMiddleware
 
-models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(openapi_prefix="/api")
 

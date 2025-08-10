@@ -1,4 +1,12 @@
-# =============================================================================
+"""
+Генератор .env.example файла
+"""
+from .validator import validator
+
+
+def generate_env_example() -> str:
+    """Сгенерировать содержимое .env.example файла"""
+    template = """# =============================================================================
 # Шаблон конфигурации проекта
 # Скопируйте этот файл в .env и заполните значения
 # =============================================================================
@@ -6,43 +14,54 @@
 # =============================================================================
 # ОКРУЖЕНИЕ
 # =============================================================================
-ENVIRONMENT=development
+ENVIRONMENT={ENVIRONMENT}
 
 # =============================================================================
 # БАЗА ДАННЫХ
 # =============================================================================
 # Основные параметры БД
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=testdb
-DB_USER=user
-DB_PASSWORD=password
+DB_HOST={DB_HOST}
+DB_PORT={DB_PORT}
+DB_NAME={DB_NAME}
+DB_USER={DB_USER}
+DB_PASSWORD={DB_PASSWORD}
 
 # Полный URL подключения (автоматически формируется из параметров выше)
-DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+DATABASE_URL=postgresql://${{DB_USER}}:${{DB_PASSWORD}}@${{DB_HOST}}:${{DB_PORT}}/${{DB_NAME}}
 
 # =============================================================================
 # BACKEND
 # =============================================================================
-BACKEND_HOST=0.0.0.0
-BACKEND_PORT=8000
-API_BASE_URL=http://localhost:8000
+BACKEND_HOST={BACKEND_HOST}
+BACKEND_PORT={BACKEND_PORT}
+API_BASE_URL={API_BASE_URL}
 
 # =============================================================================
 # FRONTEND
 # =============================================================================
-FRONTEND_HOST=0.0.0.0
-FRONTEND_PORT=5173
-VITE_API_BASE_URL=http://localhost:8000
+FRONTEND_HOST={FRONTEND_HOST}
+FRONTEND_PORT={FRONTEND_PORT}
+VITE_API_BASE_URL={VITE_API_BASE_URL}
 
 # =============================================================================
 # CI/CD (используются только в CI окружении)
 # =============================================================================
-CI_DB_PORT=5433
-CI_BACKEND_PORT=8001
-CI_FRONTEND_PORT=3001
+CI_DB_PORT={CI_DB_PORT}
+CI_BACKEND_PORT={CI_BACKEND_PORT}
+CI_FRONTEND_PORT={CI_FRONTEND_PORT}
 
 # =============================================================================
 # NGINX (если используется)
 # =============================================================================
-NGINX_PORT=80
+NGINX_PORT={NGINX_PORT}
+"""
+    
+    # Получаем конфигурацию с дефолтными значениями
+    config = validator.validate()
+    
+    # Заполняем шаблон
+    return template.format(**config)
+
+
+if __name__ == "__main__":
+    print(generate_env_example())

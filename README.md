@@ -53,6 +53,35 @@ docker-compose -f docker-compose.prod.yml up --build
 
 All sensitive configuration is managed via `.env` files.
 
+## Centralized Configuration
+
+This project uses a centralized configuration system to manage all environment variables, database URLs, and service settings in one place.
+
+### Configuration Structure
+```
+config/
+├── env.example          # Main configuration template
+├── database.py          # Python configuration module
+└── README.md           # Configuration documentation
+```
+
+### Quick Start
+```bash
+# Copy configuration template
+cp config/env.example .env
+
+# Start development services
+docker-compose -f docker-compose.dev.yml up --build
+```
+
+### Benefits
+- **Single Source of Truth**: All database URLs and settings in one place
+- **Environment Switching**: Easy switching between dev/ci/production
+- **Security**: Sensitive data managed via .env files
+- **Consistency**: Same configuration across all services
+
+For detailed configuration documentation, see [config/README.md](config/README.md).
+
 ## Important File Locations
 
 - **Dev Container Config:** `.devcontainer/devcontainer.json`
@@ -63,7 +92,8 @@ All sensitive configuration is managed via `.env` files.
 - **Backend Code:** `back/app/`
 - **Frontend Code:** `front/src/`
 - **Environment Variables:** `.env`, `front/.env`
-- **Example Environment Variables:** `.env.example`, `front/.env.example`
+- **Example Environment Variables:** `config/env.example`, `front/.env.example`
+- **Centralized Config:** `config/`
 
 ## Agent Directives
 
@@ -79,44 +109,22 @@ Detailed CI/CD documentation is located in the [docs/](docs/README.md) folder
 
 ### Running Tests Locally
 
-#### Backend Tests
+#### Quick Test Run (Recommended)
 ```bash
-# Install dependencies
-cd back && poetry install --with dev
-
-# Run tests
-poetry run pytest -v
+# Run all tests in dev containers
+./scripts/run-tests-local.sh
 ```
 
-#### Frontend Tests
+#### Individual Test Runs
 ```bash
-# Install dependencies
-cd front && npm install
+# Backend tests (inside dev container)
+docker exec backend poetry run pytest -v
 
-# Run tests
-npm run test:run
-
-# Run tests in watch mode
-npm run test
+# Frontend tests (inside dev container)  
+docker exec frontend npm run test:run
 ```
 
-#### Using Makefile
-```bash
-# Install all dependencies
-make install
 
-# Run all tests
-make test-all
-
-# Run only backend tests
-make test-backend
-
-# Run only frontend tests
-make test-frontend
-
-# Show help for commands
-make help
-```
 
 ### CI/CD Pipeline
 
@@ -131,6 +139,31 @@ The project is configured with GitHub Actions for automatic testing and deployme
 Configuration file: `.github/workflows/ci.yml`
 
 ## Task Log
+
+- **2025-08-09 (Centralized Configuration System):**
+  - **Task:** Centralize all database URLs and configuration settings to eliminate duplication and improve maintainability.
+  - **Changes:**
+    - **Centralized Configuration:** Created unified configuration system for all environment variables.
+      - Created `config/` directory with centralized configuration files
+      - Added `config/env.example` as main configuration template
+      - Created `config/database.py` Python module for programmatic access
+      - Added comprehensive documentation in `config/README.md`
+    - **Docker Compose Updates:** Refactored all docker-compose files to use environment variables.
+      - Updated `docker-compose.dev.yml` to use `${VARIABLE:-default}` syntax
+      - Updated `docker-compose.ci.yml` to use centralized configuration
+      - Eliminated hardcoded database URLs and ports
+    - **Backend Configuration:** Updated backend to use centralized configuration.
+      - Modified `back/app/core/config.py` to import from central config
+      - Updated `back/alembic.ini` and `back/alembic/env.py` for centralized DB URL
+      - Refactored `back/tests/conftest.py` to use unified configuration
+    - **CI/CD Integration:** Updated all CI/CD workflows to use centralized variables.
+      - Modified `.github/workflows/ci.yml` to use environment variables
+      - Updated `.github/workflows/simple-ci.yml` for consistency
+      - Refactored test scripts to load configuration from central source
+    - **Automation Scripts:** Updated existing test scripts to use centralized configuration
+    - **Documentation:** Enhanced project documentation with configuration details.
+      - Updated main `README.md` with configuration section
+      - Added configuration troubleshooting and usage examples
 
 - **2025-08-09 (CI/CD Setup & Testing):**
   - **Task:** Set up CI/CD pipeline with simple tests for backend and frontend.

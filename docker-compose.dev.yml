@@ -4,26 +4,30 @@ services:
     volumes:
       - ./db_data:/var/lib/postgresql/data/
     environment:
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=testdb
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
     network_mode: service:backend
 
   backend:
     build: 
       context: ./back
       dockerfile: Dockerfile.dev
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn app.main:app --host ${BACKEND_HOST} --port ${BACKEND_PORT} --reload
     volumes:
       - .:/app
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
-      - "8000:8000"
-      - "5432:5432"
-      - "5173:5173"
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
+      - "${DB_PORT}:${DB_PORT}"
+      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
     working_dir: /app/back
     environment:
-      - DATABASE_URL=postgresql://user:password@localhost/testdb
+      - DATABASE_URL=${DATABASE_URL}
+      - ENVIRONMENT=${ENVIRONMENT}
+      - BACKEND_HOST=${BACKEND_HOST}
+      - BACKEND_PORT=${BACKEND_PORT}
+      - API_BASE_URL=${API_BASE_URL}
 
   frontend:
     image: node:20-alpine
@@ -32,3 +36,5 @@ services:
       - .:/app
     working_dir: /app/front
     network_mode: service:backend
+    environment:
+      - VITE_API_BASE_URL=${FRONTEND_API_BASE_URL}

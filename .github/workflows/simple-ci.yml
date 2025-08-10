@@ -1,0 +1,59 @@
+name: Simple CI Pipeline
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  test-all:
+    runs-on: ubuntu-latest
+    name: Test All Services
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Start services with Docker Compose
+      run: |
+        docker-compose -f docker-compose.ci.yml up -d
+        
+    - name: Wait for services to be ready
+      run: |
+        # Wait for PostgreSQL
+        until docker exec test-postgres-1 pg_isready -U user -d testdb; do
+          echo "Waiting for PostgreSQL..."
+          sleep 2
+        done
+        
+        # Wait for Backend
+        until curl -f http://localhost:8000/health; do
+          echo "Waiting for Backend..."
+          sleep 2
+        done
+        
+        echo "All services are ready!"
+    
+    - name: Run Backend Tests
+      run: |
+        docker exec test-backend-1 poetry run pytest -v
+      env:
+        DB_HOST: localhost
+        DB_PORT: 5432
+        DB_NAME: testdb
+        DB_USER: user
+        DB_PASSWORD: password
+        DATABASE_URL: "postgresql://${{ env.DB_USER }}:${{ env.DB_PASSWORD }}@${{ env.DB_HOST }}:${{ env.DB_PORT }}/${{ env.DB_NAME }}"
+        ENVIRONMENT: ci
+    
+    - name: Run Frontend Tests
+      run: |
+        docker exec test-frontend-1 npm run test:run
+    
+    - name: Cleanup
+      if: always()
+      run: |
+        docker-compose -f docker-compose.ci.yml down

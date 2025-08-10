@@ -7,6 +7,22 @@ from sqlalchemy import pool
 
 from alembic import context
 
+# Добавляем путь к корневой директории проекта для импорта config
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+
+try:
+    from config.database import config as app_config
+    # Используем централизованную конфигурацию
+    database_url = app_config.database_url
+except ImportError:
+    # Fallback для случаев, когда config недоступен
+    database_url = os.getenv("DATABASE_URL")
+    if not database_url:
+        raise ValueError(
+            "Отсутствует обязательная переменная: DATABASE_URL\n"
+            "Скопируйте config/env.example в .env и заполните значения"
+        )
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
@@ -16,18 +32,11 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Add the project root to the Python path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-from app.core.config import settings
-from app.database import Base
-from app.models import *
-
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = Base.metadata
+target_metadata = None
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -47,8 +56,10 @@ def run_migrations_offline() -> None:
     script output.
 
     """
+    # Устанавливаем URL из централизованной конфигурации
+    url = database_url
     context.configure(
-        url=settings.DATABASE_URL,
+        url=url,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -65,8 +76,10 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
+    # Создаем конфигурацию с URL из централизованной конфигурации
     configuration = config.get_section(config.config_ini_section)
-    configuration["sqlalchemy.url"] = settings.DATABASE_URL
+    configuration["sqlalchemy.url"] = database_url
+    
     connectable = engine_from_config(
         configuration,
         prefix="sqlalchemy.",

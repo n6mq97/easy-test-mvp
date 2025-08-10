@@ -1,49 +1,65 @@
 import pytest
 import os
+import sys
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from fastapi.testclient import TestClient
-
-from app.database import Base, get_db
 from app.main import app
+from app.database import get_db
 
-# Устанавливаем переменные окружения для тестов
-@pytest.fixture(autouse=True)
-def setup_test_env():
-    """Автоматически устанавливает тестовое окружение для всех тестов"""
-    os.environ["DATABASE_URL"] = "postgresql://user:password@localhost/testdb"
-    yield
-    # Очищаем переменные после тестов
-    if "DATABASE_URL" in os.environ:
-        del os.environ["DATABASE_URL"]
+# Добавляем путь к корневой директории проекта для импорта config
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 
-@pytest.fixture
-def db_engine():
-    """Создает тестовый движок БД"""
-    database_url = "postgresql://user:password@localhost/testdb"
+try:
+    from config.database import config as app_config
+    # Используем централизованную конфигурацию
+    database_url = app_config.database_url
+except ImportError:
+    # Fallback для случаев, когда config недоступен
+    database_url = os.getenv("DATABASE_URL")
+    if not database_url:
+        raise ValueError(
+            "Отсутствует обязательная переменная: DATABASE_URL\n"
+            "Скопируйте config/env.example в .env и заполните значения"
+        )
+
+@pytest.fixture(scope="session")
+def engine():
+    """Создать движок БД для тестов"""
+    # Создаем движок
     engine = create_engine(database_url)
+    
+    # Создаем все таблицы
+    from app.models import Base
+    Base.metadata.create_all(bind=engine)
+    
     yield engine
+    
+    # Удаляем все таблицы
+    Base.metadata.drop_all(bind=engine)
     engine.dispose()
 
 @pytest.fixture
-def db_session(db_engine):
-    """Создает тестовую сессию БД с автоматической очисткой"""
-    # Создаем все таблицы
-    Base.metadata.create_all(bind=db_engine)
+def db_session(engine):
+    """Создать сессию БД для тестов"""
+    Session = sessionmaker(bind=engine)
+    session = Session()
     
-    # Создаем сессию
-    TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
-    session = TestingSessionLocal()
+    # Очищаем все данные перед каждым тестом
+    from app.models import Base
+    for table in reversed(Base.metadata.sorted_tables):
+        session.execute(table.delete())
+    session.commit()
     
     yield session
     
-    # Очищаем после тестов
+    # Очищаем все данные после каждого теста
+    session.rollback()
     session.close()
-    Base.metadata.drop_all(bind=db_engine)
 
 @pytest.fixture
 def client(db_session):
-    """Создает тестовый клиент с переопределенной зависимостью БД"""
+    """Создать тестовый клиент FastAPI"""
     def override_get_db():
         try:
             yield db_session
@@ -54,12 +70,11 @@ def client(db_session):
     with TestClient(app) as test_client:
         yield test_client
     
-    # Восстанавливаем оригинальную зависимость
     app.dependency_overrides.clear()
 
 @pytest.fixture
 def sample_section(db_session):
-    """Создает тестовую секцию"""
+    """Создать тестовую секцию"""
     from app.models import Section
     section = Section(name="Test Section")
     db_session.add(section)
@@ -69,24 +84,10 @@ def sample_section(db_session):
 
 @pytest.fixture
 def sample_question(db_session, sample_section):
-    """Создает тестовый вопрос"""
+    """Создать тестовый вопрос"""
     from app.models import Question
     question = Question(text="Test Question?", section_id=sample_section.id)
     db_session.add(question)
     db_session.commit()
     db_session.refresh(question)
     return question
-
-@pytest.fixture
-def sample_answers(db_session, sample_question):
-    """Создает тестовые ответы"""
-    from app.models import Answer
-    answers = [
-        Answer(text="Answer 1", is_correct=False, question_id=sample_question.id),
-        Answer(text="Answer 2", is_correct=True, question_id=sample_question.id),
-        Answer(text="Answer 3", is_correct=False, question_id=sample_question.id)
-    ]
-    for answer in answers:
-        db_session.add(answer)
-    db_session.commit()
-    return answers

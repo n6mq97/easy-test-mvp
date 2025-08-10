@@ -73,7 +73,87 @@ All sensitive configuration is managed via `.env` files.
 - **Hot-Reload:** Remember that hot-reloading is enabled. After making changes, the services should restart automatically.
 - **Task Log:** At the user's request, add a summary of completed tasks to the "Task Log" section.
 
+## Testing & CI/CD
+
+Подробная документация по CI/CD находится в папке [docs/](docs/README.md)
+
+### Running Tests Locally
+
+#### Backend Tests
+```bash
+# Установить зависимости
+cd back && poetry install --with dev
+
+# Запустить тесты
+poetry run pytest -v
+```
+
+#### Frontend Tests
+```bash
+# Установить зависимости
+cd front && npm install
+
+# Запустить тесты
+npm run test:run
+
+# Запустить тесты в watch режиме
+npm run test
+```
+
+#### Using Makefile
+```bash
+# Установить все зависимости
+make install
+
+# Запустить все тесты
+make test-all
+
+# Запустить только бэкенд тесты
+make test-backend
+
+# Запустить только фронтенд тесты
+make test-frontend
+
+# Показать справку по командам
+make help
+```
+
+### CI/CD Pipeline
+
+Проект настроен с GitHub Actions для автоматического тестирования и деплоя:
+
+- **Backend Tests**: Python + Poetry + pytest
+- **Frontend Tests**: Node.js + Vitest + React Testing Library
+- **Linting**: ESLint для фронтенда
+- **Build**: Проверка сборки фронтенда
+- **Deploy**: Автоматический деплой при push в main ветку
+
+Файл конфигурации: `.github/workflows/ci.yml`
+
 ## Task Log
+
+- **2025-08-09 (CI/CD Setup & Testing):**
+  - **Task:** Настроить CI/CD pipeline с простыми тестами для бэкенда и фронтенда.
+  - **Changes:**
+    - **Backend Testing:** Добавлена система тестирования с pytest.
+      - Добавлены dev-зависимости: pytest, pytest-asyncio, httpx
+      - Создан простой тест для основного эндпоинта и health check
+      - Добавлен эндпоинт `/health` для проверки состояния сервиса
+      - Настроена конфигурация pytest в `pytest.ini`
+    - **Frontend Testing:** Настроено тестирование с Vitest и React Testing Library.
+      - Добавлены dev-зависимости: vitest, @testing-library/react, @testing-library/jest-dom
+      - Создан простой тест для App компонента
+      - Настроен Vite для тестирования с jsdom окружением
+      - Добавлены npm скрипты для тестирования
+    - **CI/CD Pipeline:** Создан GitHub Actions workflow.
+      - Автоматическое тестирование бэкенда и фронтенда
+      - Проверка линтинга и сборки
+      - Условный деплой при push в main ветку
+      - Кэширование зависимостей для ускорения сборки
+    - **Developer Experience:** Улучшена удобство разработки.
+      - Создан Makefile с полезными командами
+      - Команды для установки зависимостей, запуска тестов, линтинга
+      - Команды для запуска сервисов в режиме разработки
 
 - **2025-08-09 (Database Architecture & Migration System):**
   - **Task:** Implement proper database migration system and optimize Docker networking.

@@ -39,6 +39,7 @@ const HomePage = () => {
     return (
         <div>
             <h1>Easy Test</h1>
+            <p>Welcome to Easy Test application!</p>
             <div>
                 <h2>Add Tests (JSON)</h2>
                 <textarea

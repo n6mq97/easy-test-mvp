@@ -61,4 +61,8 @@ def read_section_tests(section_id: int, db: Session = Depends(get_db)):
 
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    return {"message": "Hello World"}
+
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}

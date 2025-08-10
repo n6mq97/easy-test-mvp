@@ -17,12 +17,14 @@ services:
     volumes:
       - .:/app
       - /var/run/docker.sock:/var/run/docker.sock
+      - ${SSH_AUTH_SOCK}:/ssh-agent
     ports:
       - "${BACKEND_PORT}:${BACKEND_PORT}"
       - "${DB_PORT}:${DB_PORT}"
       - "${FRONTEND_PORT}:${FRONTEND_PORT}"
     working_dir: /app/back
     environment:
+      - SSH_AUTH_SOCK=/ssh-agent
       - DATABASE_URL=${DATABASE_URL}
       - ENVIRONMENT=${ENVIRONMENT}
       - BACKEND_HOST=${BACKEND_HOST}

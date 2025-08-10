@@ -16,13 +16,14 @@
 	"features": {
 		"ghcr.io/devcontainers/features/git:1": {},
 		"ghcr.io/devcontainers/features/github-cli:1": {},
-		"ghcr.io/devcontainers/features/docker-in-docker:2": {
-			"moby": true,
-			"installDockerBuildx": true,
-			"version": "latest",
-			"dockerDashComposeVersion": "v2"
+		"ghcr.io/devcontainers/features/docker-from-docker:1": {
+			"version": "latest"
 		}
 	},
-	"forwardPorts": [8000, 5173, 5432],
-	"remoteUser": "root"
+	"forwardPorts": [
+		8000,
+		5173,
+		5432
+	],
+	"remoteUser": "vscode"
 }

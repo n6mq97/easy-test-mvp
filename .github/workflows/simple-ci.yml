@@ -19,7 +19,7 @@ jobs:
     
     - name: Start services with Docker Compose
       run: |
-        docker-compose -f docker-compose.ci.yml up -d
+        docker compose -f docker-compose.ci.yml up -d
         
     - name: Wait for services to be ready
       run: |
@@ -56,4 +56,4 @@ jobs:
     - name: Cleanup
       if: always()
       run: |
-        docker-compose -f docker-compose.ci.yml down
+        docker compose -f docker-compose.ci.yml down

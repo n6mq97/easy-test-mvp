@@ -10,6 +10,14 @@ jobs:
   test-all:
     runs-on: ubuntu-latest
     name: Test All Services
+    env:
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_NAME: testdb
+      DB_USER: user
+      DB_PASSWORD: password
+      DATABASE_URL: "postgresql://user:password@db:5432/testdb"
+      ENVIRONMENT: ci
     
     steps:
     - uses: actions/checkout@v4
@@ -24,7 +32,7 @@ jobs:
     - name: Wait for services to be ready
       run: |
         # Wait for PostgreSQL
-        until docker exec test-postgres-1 pg_isready -U user -d testdb; do
+        until docker compose exec -T db pg_isready -U user -d testdb; do
           echo "Waiting for PostgreSQL..."
           sleep 2
         done
@@ -39,19 +47,11 @@ jobs:
     
     - name: Run Backend Tests
       run: |
-        docker exec test-backend-1 poetry run pytest -v
-      env:
-        DB_HOST: localhost
-        DB_PORT: 5432
-        DB_NAME: testdb
-        DB_USER: user
-        DB_PASSWORD: password
-        DATABASE_URL: "postgresql://${{ env.DB_USER }}:${{ env.DB_PASSWORD }}@${{ env.DB_HOST }}:${{ env.DB_PORT }}/${{ env.DB_NAME }}"
-        ENVIRONMENT: ci
+        docker compose exec -T backend poetry run pytest -v
     
     - name: Run Frontend Tests
       run: |
-        docker exec test-frontend-1 npm run test:run
+        docker compose exec -T frontend npm run test:run
     
     - name: Cleanup
       if: always()

@@ -32,7 +32,7 @@ jobs:
     - name: Wait for services to be ready
       run: |
         # Wait for PostgreSQL
-        until docker compose exec -T db pg_isready -U user -d testdb; do
+        until docker compose -f docker-compose.ci.yml exec -T db pg_isready -U user -d testdb; do
           echo "Waiting for PostgreSQL..."
           sleep 2
         done
@@ -47,11 +47,11 @@ jobs:
     
     - name: Run Backend Tests
       run: |
-        docker compose exec -T backend poetry run pytest -v
+        docker compose -f docker-compose.ci.yml exec -T backend poetry run pytest -v
     
     - name: Run Frontend Tests
       run: |
-        docker compose exec -T frontend npm run test:run
+        docker compose -f docker-compose.ci.yml exec -T frontend npm run test:run
     
     - name: Cleanup
       if: always()

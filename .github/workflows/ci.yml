@@ -70,6 +70,7 @@ jobs:
     - name: Run database migrations
       working-directory: ./back
       run: |
+        export DATABASE_URL="postgresql://user:password@localhost:5432/testdb"
         poetry run alembic upgrade head
       env:
         DATABASE_URL: "postgresql://user:password@localhost:5432/testdb"

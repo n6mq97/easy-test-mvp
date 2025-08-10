@@ -61,7 +61,7 @@ jobs:
     
     - name: Wait for PostgreSQL
       run: |
-        until pg_isready -h localhost -p 5432 -U test; do
+        until pg_isready -h localhost -p 5432 -U user; do
           echo "Waiting for PostgreSQL..."
           sleep 2
         done
@@ -72,7 +72,7 @@ jobs:
       run: |
         poetry run alembic upgrade head
       env:
-        DATABASE_URL: "postgresql://test:test@localhost:5432/testdb"
+        DATABASE_URL: "postgresql://user:password@localhost:5432/testdb"
     
     - name: Run tests
       working-directory: ./back

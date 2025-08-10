@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, main ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, main ]
 
 jobs:
   test-backend:
@@ -81,8 +81,40 @@ jobs:
     
     - name: Deploy to production
       run: |
-        echo "Deploying to production..."
-        echo "Backend tests passed ✓"
-        echo "Frontend tests passed ✓"
-        echo "Build successful ✓"
-        # Здесь можно добавить реальные команды деплоя
+        echo "🚀 Starting production deployment..."
+        
+        # Create SSH key
+        mkdir -p ~/.ssh
+        echo "${{ secrets.PROD_SSH_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        
+        # Add server to known_hosts
+        ssh-keyscan -H ${{ secrets.PROD_SSH_HOST }} >> ~/.ssh/known_hosts
+        
+        # Set environment variables for deployment
+        export PROD_DB_USER="${{ secrets.PROD_DB_USER }}"
+        export PROD_DB_PASSWORD="${{ secrets.PROD_DB_PASSWORD }}"
+        export PROD_DB_NAME="${{ secrets.PROD_DB_NAME }}"
+        export PROD_API_URL="${{ secrets.PROD_API_URL }}"
+        export PROD_DOMAIN="${{ secrets.PROD_DOMAIN }}"
+        
+        # Copy deployment script to server
+        scp scripts/deploy.sh ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SSH_HOST }}:/tmp/deploy.sh
+        
+        # Execute deployment on server
+        ssh ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SSH_HOST }} << 'EOF'
+          set -e
+          export PROD_DB_USER="$PROD_DB_USER"
+          export PROD_DB_PASSWORD="$PROD_DB_PASSWORD"
+          export PROD_DB_NAME="$PROD_DB_NAME"
+          export PROD_API_URL="$PROD_API_URL"
+          export PROD_DOMAIN="$PROD_DOMAIN"
+          
+          chmod +x /tmp/deploy.sh
+          /tmp/deploy.sh
+          
+          # Cleanup
+          rm /tmp/deploy.sh
+        EOF
+        
+        echo "✅ Production deployment completed successfully!"

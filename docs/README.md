@@ -3,6 +3,7 @@
 ## 📖 Main Documents
 
 - **[CI/CD Setup](ci-cd.md)** - CI/CD pipeline setup and usage
+- **[Deployment](deployment2.md)** - Deployment documentation
 - **[Backend README](../back/README.md)** - Backend documentation
 - **[Frontend README](../front/README.md)** - Frontend documentation
 

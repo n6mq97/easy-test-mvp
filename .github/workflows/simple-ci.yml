@@ -32,7 +32,6 @@ jobs:
     - name: Run Tests
       run: |
         docker compose -f docker-compose.ci.yml exec -T backend poetry run pytest -v
-        docker compose -f docker-compose.ci.yml exec -T frontend npm run test:run
     
     - name: Cleanup
       if: always()

@@ -107,6 +107,77 @@ class ConfigValidator:
         
         return config
 
+    def generate_env_example_content(self) -> str:
+        """Сгенерировать содержимое .env.example файла"""
+        template = """# =============================================================================
+# Шаблон конфигурации проекта
+# Скопируйте этот файл в .env и заполните значения
+# =============================================================================
+
+# =============================================================================
+# ОКРУЖЕНИЕ
+# =============================================================================
+ENVIRONMENT={ENVIRONMENT}
+
+# =============================================================================
+# БАЗА ДАННЫХ
+# =============================================================================
+# Основные параметры БД
+DB_HOST={DB_HOST}
+DB_PORT={DB_PORT}
+DB_NAME={DB_NAME}
+DB_USER={DB_USER}
+DB_PASSWORD={DB_PASSWORD}
+
+# Полный URL подключения (автоматически формируется из параметров выше)
+DATABASE_URL=postgresql://${{DB_USER}}:${{DB_PASSWORD}}@${{DB_HOST}}:${{DB_PORT}}/${{DB_NAME}}
+
+# =============================================================================
+# BACKEND
+# =============================================================================
+BACKEND_HOST={BACKEND_HOST}
+BACKEND_PORT={BACKEND_PORT}
+API_BASE_URL={API_BASE_URL}
+
+# =============================================================================
+# FRONTEND
+# =============================================================================
+FRONTEND_HOST={FRONTEND_HOST}
+FRONTEND_PORT={FRONTEND_PORT}
+VITE_API_BASE_URL={VITE_API_BASE_URL}
+
+# =============================================================================
+# CI/CD (используются только в CI окружении)
+# =============================================================================
+CI_DB_PORT={CI_DB_PORT}
+CI_BACKEND_PORT={CI_BACKEND_PORT}
+CI_FRONTEND_PORT={CI_FRONTEND_PORT}
+
+# =============================================================================
+# NGINX (если используется)
+# =============================================================================
+NGINX_PORT={NGINX_PORT}
+"""
+        
+        # Используем validate со strict=False, чтобы получить все переменные с дефолтами
+        config = self.validate(strict=False)
+        
+        # Заполняем шаблон
+        return template.format(**config)
+
 
 # Глобальный экземпляр валидатора
 validator = ConfigValidator()
+
+if __name__ == "__main__":
+    # Определяем корневую директорию проекта
+    # (два уровня вверх от текущего файла: config/env -> config -> корень)
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    output_path = os.path.join(project_root, '.env.example')
+    
+    # Генерируем и записываем контент
+    content = validator.generate_env_example_content()
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write(content)
+        
+    print(f"✅ .env.example успешно сгенерирован в: {output_path}")

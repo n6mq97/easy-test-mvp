@@ -1,6 +1,11 @@
 # Stage 1: Build the application
 FROM node:20-alpine AS builder
 
+# Set build-time argument
+ARG VITE_API_BASE_URL
+# Set environment variable for the build process
+ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
+
 WORKDIR /app
 
 # Copy package files and install dependencies

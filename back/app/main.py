@@ -19,7 +19,7 @@ app.add_middleware(
 )
 
 @app.post("/tests/", response_model=List[schemas.Question])
-def create_tests(tests: List[schemas.TestCreate], db: Session = Depends(get_db)):
+def create_tests(tests: List[schemas.TestPayload], db: Session = Depends(get_db)):
     created_questions = []
     for test in tests:
         # Find or create section

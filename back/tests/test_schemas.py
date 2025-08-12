@@ -115,7 +115,7 @@ class TestSectionSchemas:
         assert section.id == 1
         assert section.name == "Mathematics"
 
-class TestTestCreateSchema:
+class TestTestPayloadSchema:
     """Тесты для схемы создания теста"""
     
     def test_test_create_valid(self):

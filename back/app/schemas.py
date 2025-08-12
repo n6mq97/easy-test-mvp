@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import List
 
 class AnswerBase(BaseModel):
@@ -11,8 +11,7 @@ class AnswerCreate(AnswerBase):
 class Answer(AnswerBase):
     id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class QuestionBase(BaseModel):
     text: str
@@ -24,8 +23,7 @@ class Question(QuestionBase):
     id: int
     answers: List[Answer] = []
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class SectionBase(BaseModel):
     name: str
@@ -37,16 +35,14 @@ class Section(SectionBase):
     id: int
     questions: List[Question] = []
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class SectionInfo(SectionBase):
     id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
-class TestCreate(BaseModel):
+class TestPayload(BaseModel):
     section: str
     question: str
     answers: List[str]

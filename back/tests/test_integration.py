@@ -1,6 +1,6 @@
 import pytest
 from app.models import Section, Question, Answer
-from app.schemas import TestCreate
+from app.schemas import TestPayload
 
 class TestDatabaseIntegration:
     """Интеграционные тесты для проверки работы с базой данных"""
@@ -158,7 +158,7 @@ class TestSchemaValidation:
             "answers": ["3", "4", "5"],
             "correct": 1
         }
-        test = TestCreate(**valid_data)
+        test = TestPayload(**valid_data)
         assert test.section == "Math"
         assert test.question == "What is 2+2?"
         assert test.answers == ["3", "4", "5"]
@@ -171,6 +171,6 @@ class TestSchemaValidation:
             "answers": ["A"],  # Минимальное количество ответов
             "correct": 0  # Первый ответ
         }
-        test = TestCreate(**edge_case_data)
+        test = TestPayload(**edge_case_data)
         assert test.correct == 0
 

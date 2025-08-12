@@ -4,7 +4,7 @@ from app.schemas import (
     AnswerBase, AnswerCreate, Answer,
     QuestionBase, QuestionCreate, Question,
     SectionBase, SectionCreate, Section,
-    SectionInfo, TestCreate
+    SectionInfo, TestPayload
 )
 
 class TestAnswerSchemas:
@@ -126,7 +126,7 @@ class TestTestCreateSchema:
             "answers": ["3", "4", "5"],
             "correct": 1
         }
-        test = TestCreate(**data)
+        test = TestPayload(**data)
         assert test.section == "Mathematics"
         assert test.question == "What is 2+2?"
         assert test.answers == ["3", "4", "5"]
